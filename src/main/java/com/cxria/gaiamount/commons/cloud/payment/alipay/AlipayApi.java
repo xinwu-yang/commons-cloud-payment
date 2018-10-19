@@ -70,7 +70,7 @@ public class AlipayApi implements IPay {
     }
 
     @Override
-    public String createPaymentOrder() {
+    public String createOrder() {
         AlipayTradePagePayModel alipayTradePagePayModel = new AlipayTradePagePayModel();
         alipayTradePagePayModel.setOutTradeNo(outTradeNo);
         alipayTradePagePayModel.setTotalAmount(totalAmount);
@@ -90,5 +90,16 @@ public class AlipayApi implements IPay {
             return null;
         }
         return alipayTradePagePayResponse.getBody();
+    }
+
+    public static String convertAmount(int amount) {
+        String amountStr = amount / 100 + ".";
+        int z = amount % 100;
+        if (z < 10) {
+            amountStr += "0" + z;
+        } else {
+            amountStr += z;
+        }
+        return amountStr;
     }
 }
