@@ -9,8 +9,8 @@
     <packaging>jar</packaging>
 
     <parent>
-        <groupId>com.cxria.gaiamount.commons</groupId>
-        <artifactId>pom</artifactId>
+        <groupId>com.cxria</groupId>
+        <artifactId>gaiamount</artifactId>
         <version>1.0.0</version>
     </parent>
 
