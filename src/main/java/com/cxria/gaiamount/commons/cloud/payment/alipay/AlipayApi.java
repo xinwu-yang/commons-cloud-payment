@@ -8,18 +8,24 @@ import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.cxria.gaiamount.commons.cloud.payment.IPay;
 
 public class AlipayApi implements IPay {
-
+    //支付结果通知地址
     private String notifyUrl;
-
+    //支付成功回调地址
     private String returnUrl;
-
+    //商户订单号
     private String outTradeNo;
-
+    //金额总额
     private String totalAmount;
-
+    //订单过期时间
+    private String timeout = "10m";
+    //标题
+    private String subject;
+    //内容
     private String body;
 
     private AlipayClient alipayClient;
+    //是否是移动端支付
+    private boolean mobile;
 
     public String getNotifyUrl() {
         return notifyUrl;
@@ -45,12 +51,28 @@ public class AlipayApi implements IPay {
         this.outTradeNo = outTradeNo;
     }
 
+    public String getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(String timeout) {
+        this.timeout = timeout;
+    }
+
     public String getTotalAmount() {
         return totalAmount;
     }
 
     public void setTotalAmount(String totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public String getBody() {
@@ -69,15 +91,27 @@ public class AlipayApi implements IPay {
         this.alipayClient = alipayClient;
     }
 
+    public boolean isMobile() {
+        return mobile;
+    }
+
+    public void setMobile(boolean mobile) {
+        this.mobile = mobile;
+    }
+
     @Override
     public String createOrder() {
         AlipayTradePagePayModel alipayTradePagePayModel = new AlipayTradePagePayModel();
         alipayTradePagePayModel.setOutTradeNo(outTradeNo);
         alipayTradePagePayModel.setTotalAmount(totalAmount);
-        alipayTradePagePayModel.setSubject("Gaiamount Goods");
+        alipayTradePagePayModel.setSubject(subject);
         alipayTradePagePayModel.setBody(body);
-        alipayTradePagePayModel.setTimeoutExpress("10m");
-        alipayTradePagePayModel.setProductCode("FAST_INSTANT_TRADE_PAY");
+        alipayTradePagePayModel.setTimeoutExpress(timeout);
+        if (mobile) {
+            alipayTradePagePayModel.setProductCode("QUICK_WAP_WAY");
+        } else {
+            alipayTradePagePayModel.setProductCode("FAST_INSTANT_TRADE_PAY");
+        }
         AlipayTradePagePayRequest alipayTradePagePayRequest = new AlipayTradePagePayRequest();
         alipayTradePagePayRequest.setNotifyUrl(notifyUrl);
         alipayTradePagePayRequest.setReturnUrl(returnUrl);
