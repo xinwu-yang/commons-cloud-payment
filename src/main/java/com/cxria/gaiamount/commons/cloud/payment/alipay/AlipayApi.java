@@ -3,8 +3,11 @@ package com.cxria.gaiamount.commons.cloud.payment.alipay;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.domain.AlipayTradePagePayModel;
+import com.alipay.api.domain.AlipayTradeWapPayModel;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.alipay.api.response.AlipayTradeWapPayResponse;
 import com.cxria.gaiamount.commons.cloud.payment.IPay;
 
 public class AlipayApi implements IPay {
@@ -101,29 +104,41 @@ public class AlipayApi implements IPay {
 
     @Override
     public String createOrder() {
-        AlipayTradePagePayModel alipayTradePagePayModel = new AlipayTradePagePayModel();
-        alipayTradePagePayModel.setOutTradeNo(outTradeNo);
-        alipayTradePagePayModel.setTotalAmount(totalAmount);
-        alipayTradePagePayModel.setSubject(subject);
-        alipayTradePagePayModel.setBody(body);
-        alipayTradePagePayModel.setTimeoutExpress(timeout);
-        if (mobile) {
-            alipayTradePagePayModel.setProductCode("QUICK_WAP_WAY");
-        } else {
-            alipayTradePagePayModel.setProductCode("FAST_INSTANT_TRADE_PAY");
-        }
-        AlipayTradePagePayRequest alipayTradePagePayRequest = new AlipayTradePagePayRequest();
-        alipayTradePagePayRequest.setNotifyUrl(notifyUrl);
-        alipayTradePagePayRequest.setReturnUrl(returnUrl);
-        alipayTradePagePayRequest.setBizModel(alipayTradePagePayModel);
-        AlipayTradePagePayResponse alipayTradePagePayResponse;
+        String order = null;
         try {
-            alipayTradePagePayResponse = alipayClient.pageExecute(alipayTradePagePayRequest);
+            if (mobile) {
+                AlipayTradeWapPayModel wapPayModel = new AlipayTradeWapPayModel();
+                wapPayModel.setOutTradeNo(outTradeNo);
+                wapPayModel.setTotalAmount(totalAmount);
+                wapPayModel.setSubject(subject);
+                wapPayModel.setBody(body);
+                wapPayModel.setTimeoutExpress(timeout);
+                wapPayModel.setProductCode("QUICK_WAP_WAY");
+                AlipayTradeWapPayRequest wapPayRequest = new AlipayTradeWapPayRequest();
+                wapPayRequest.setNotifyUrl(notifyUrl);
+                wapPayRequest.setReturnUrl(returnUrl);
+                wapPayRequest.setBizModel(wapPayModel);
+                AlipayTradeWapPayResponse wapPayResponse = alipayClient.pageExecute(wapPayRequest);
+                order = wapPayResponse.getBody();
+            } else {
+                AlipayTradePagePayModel pagePayModel = new AlipayTradePagePayModel();
+                pagePayModel.setOutTradeNo(outTradeNo);
+                pagePayModel.setTotalAmount(totalAmount);
+                pagePayModel.setSubject(subject);
+                pagePayModel.setBody(body);
+                pagePayModel.setTimeoutExpress(timeout);
+                pagePayModel.setProductCode("FAST_INSTANT_TRADE_PAY");
+                AlipayTradePagePayRequest pagePayRequest = new AlipayTradePagePayRequest();
+                pagePayRequest.setNotifyUrl(notifyUrl);
+                pagePayRequest.setReturnUrl(returnUrl);
+                pagePayRequest.setBizModel(pagePayModel);
+                AlipayTradePagePayResponse pagePayResponse = alipayClient.pageExecute(pagePayRequest);
+                order = pagePayResponse.getBody();
+            }
         } catch (AlipayApiException e) {
             e.printStackTrace();
-            return null;
         }
-        return alipayTradePagePayResponse.getBody();
+        return order;
     }
 
     public static String convertAmount(int amount) {
